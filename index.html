@@ -3,13 +3,468 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منشئ النماذج الذكي</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>مُنشئ النماذج الذكي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+        
+        .panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .ai-section {
+            background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%);
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .ai-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ai-icon {
+            font-size: 1.5em;
+        }
+        
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .field-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .field-controls input {
+            flex: 1;
+        }
+        
+        .field-controls button {
+            padding: 12px 20px;
+            margin: 0;
+        }
+        
+        .form-preview {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 25px;
+            min-height: 200px;
+        }
+        
+        .form-field {
+            margin-bottom: 20px;
+        }
+        
+        .form-field label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .form-field input, .form-field textarea, .form-field select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .export-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            width: 100%;
+            font-size: 18px;
+            padding: 15px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="root"></div>
-    <iframe src="https://claude.site/public/artifacts/667db7a4-c730-470a-8eb2-5b39c57abc99/embed" title="Claude Artifact" width="100%" height="600" frameborder="0" allow="clipboard-write" allowfullscreen></iframe>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 مُنشئ النماذج الذكي</h1>
+            <p>أنشئ نماذج احترافية بسهولة مع قوة الذكاء الاصطناعي</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="panel">
+                <h2>⚙️ تصميم النموذج</h2>
+                
+                <div class="ai-section">
+                    <h3><span class="ai-icon">✨</span> الإنشاء بالذكاء الاصطناعي</h3>
+                    <textarea id="aiPrompt" placeholder="مثال: أريد نموذج تسجيل للطلاب يحتوي على الاسم، البريد الإلكتروني، رقم الهاتف، والتخصص"></textarea>
+                    <button onclick="generateWithAI()">🤖 توليد الحقول تلقائياً</button>
+                    <div class="loading" id="aiLoading">⏳ جاري التوليد...</div>
+                </div>
+                
+                <h3 style="color: #333; margin-bottom: 15px;">أو أضف حقولاً يدوياً:</h3>
+                
+                <div class="field-controls">
+                    <input type="text" id="fieldName" placeholder="اسم الحقل (مثال: الاسم الكامل)">
+                    <button onclick="addField('text')">➕ نص</button>
+                    <button onclick="addField('email')">📧 بريد</button>
+                    <button onclick="addField('tel')">📱 هاتف</button>
+                    <button onclick="addField('textarea')">📝 نص طويل</button>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>👁️ معاينة النموذج</h2>
+                <div class="form-preview" id="formPreview">
+                    <p style="color: #999; text-align: center;">لم يتم إضافة أي حقول بعد</p>
+                </div>
+                
+                <div class="export-section">
+                    <button class="export-btn" onclick="exportHTML()">📥 تصدير كملف HTML</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let formFields = [];
+        
+        async function generateWithAI() {
+            const prompt = document.getElementById('aiPrompt').value.trim();
+            if (!prompt) {
+                alert('الرجاء كتابة وصف للنموذج المطلوب');
+                return;
+            }
+            
+            const loading = document.getElementById('aiLoading');
+            loading.classList.add('active');
+            
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 1000,
+                        messages: [{
+                            role: 'user',
+                            content: `بناءً على الوصف التالي، أنشئ قائمة بحقول النموذج. أرجع النتيجة كـ JSON فقط بدون أي نص إضافي أو markdown:
+
+الوصف: ${prompt}
+
+الصيغة المطلوبة:
+{
+  "fields": [
+    {"name": "اسم الحقل بالعربية", "type": "text"},
+    {"name": "اسم آخر", "type": "email"}
+  ]
+}
+
+الأنواع المتاحة: text, email, tel, textarea, number, date`
+                        }]
+                    })
+                });
+                
+                const data = await response.json();
+                const content = data.content[0].text.trim();
+                const cleanContent = content.replace(/```json|```/g, '').trim();
+                const result = JSON.parse(cleanContent);
+                
+                formFields = [];
+                result.fields.forEach(field => {
+                    formFields.push({
+                        name: field.name,
+                        type: field.type || 'text'
+                    });
+                });
+                
+                updatePreview();
+                alert('تم توليد الحقول بنجاح! ✅');
+                
+            } catch (error) {
+                console.error('خطأ:', error);
+                alert('حدث خطأ في التوليد. الرجاء المحاولة مرة أخرى.');
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+        
+        function addField(type) {
+            const fieldName = document.getElementById('fieldName').value.trim();
+            if (!fieldName) {
+                alert('الرجاء إدخال اسم الحقل');
+                return;
+            }
+            
+            formFields.push({
+                name: fieldName,
+                type: type
+            });
+            
+            document.getElementById('fieldName').value = '';
+            updatePreview();
+        }
+        
+        function updatePreview() {
+            const preview = document.getElementById('formPreview');
+            
+            if (formFields.length === 0) {
+                preview.innerHTML = '<p style="color: #999; text-align: center;">لم يتم إضافة أي حقول بعد</p>';
+                return;
+            }
+            
+            let html = '<form>';
+            formFields.forEach((field, index) => {
+                html += `
+                    <div class="form-field">
+                        <label>${field.name}</label>
+                        ${field.type === 'textarea' 
+                            ? `<textarea placeholder="${field.name}"></textarea>`
+                            : `<input type="${field.type}" placeholder="${field.name}">`
+                        }
+                    </div>
+                `;
+            });
+            html += '<button type="submit" style="margin-top: 10px;">إرسال</button></form>';
+            
+            preview.innerHTML = html;
+        }
+        
+        function exportHTML() {
+            if (formFields.length === 0) {
+                alert('الرجاء إضافة حقول للنموذج أولاً');
+                return;
+            }
+            
+            const htmlContent = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج البيانات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .form-field {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>نموذج البيانات</h1>
+        <form id="dataForm">
+${formFields.map(field => `            <div class="form-field">
+                <label>${field.name}</label>
+                ${field.type === 'textarea' 
+                    ? `<textarea name="${field.name}" placeholder="${field.name}" required></textarea>`
+                    : `<input type="${field.type}" name="${field.name}" placeholder="${field.name}" required>`
+                }
+            </div>
+`).join('')}
+            <button type="submit">إرسال البيانات</button>
+        </form>
+    </div>
+    
+    <script>
+        document.getElementById('dataForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('تم إرسال البيانات بنجاح! ✅');
+            this.reset();
+        });
+    </script>
+</body>
+</html>`;
+            
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'form.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('تم تصدير الملف بنجاح! 🎉\nيمكنك الآن رفعه إلى GitHub');
+        }
+    </script>
 </body>
 </html>
